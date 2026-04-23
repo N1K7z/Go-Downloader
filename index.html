@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoDownloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --bg: #ffffff; --fg: #000000; }
+        .dark-mode { --bg: #0a0a0a; --fg: #ffffff; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            transition: 0.2s;
+            overflow-x: hidden;
+        }
+
+        * { font-weight: 800; font-style: normal !important; }
+        .font-bold-900 { font-weight: 900 !important; }
+
+        .brutalist-card {
+            border: 3px solid var(--fg);
+            box-shadow: 6px 6px 0px var(--fg);
+            border-radius: 12px;
+            width: 100%;
+        }
+
+        input, select, button {
+            border: 3px solid var(--fg);
+            background-color: transparent;
+            border-radius: 8px;
+            color: var(--fg);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input { padding: 16px 18px; font-size: 16px; }
+        input::placeholder { opacity: 0.4; }
+
+        select {
+            padding: 16px 18px !important;
+            cursor: pointer;
+            font-size: 16px;
+            -webkit-appearance: listbox !important;
+            appearance: listbox !important;
+        }
+
+        .dark-mode select { background-color: #0a0a0a; color: #ffffff; }
+        .dark-mode select option { background-color: #1a1a1a; color: #ffffff; }
+
+        button:active:not(:disabled) {
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0px var(--fg);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .mode-pill {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            border: 3px solid var(--fg);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            text-transform: uppercase;
+            cursor: pointer;
+            background-color: var(--bg);
+            box-shadow: 4px 4px 0px var(--fg);
+            z-index: 50;
+        }
+        .mode-pill:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0px var(--fg);
+        }
+        .mode-pill:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px var(--fg); }
+
+        .loader { border-top-color: transparent; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .saweria-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #faae2b;
+            color: #000 !important;
+            border: 3px solid var(--fg);
+            box-shadow: 4px 4px 0px var(--fg);
+            text-decoration: none;
+            font-size: 12px;
+            transition: 0.1s;
+        }
+        .saweria-btn:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0px var(--fg);
+        }
+        .saweria-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0px var(--fg);
+        }
+
+        /* Responsive container */
+        .container {
+            width: 100%;
+            padding: 0 16px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+            .container { max-width: 600px; padding: 0; }
+        }
+
+        @media (min-width: 1024px) {
+            .container { max-width: 680px; }
+        }
+
+        /* Responsive mode pill */
+        @media (max-width: 640px) {
+            .mode-pill {
+                top: 10px;
+                right: 10px;
+                padding: 3px 8px;
+                font-size: 9px;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 16px 18px;
+            font-size: 16px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+
+        .btn {
+            padding: 16px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 900;
+        }
+
+        .btn:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0px var(--fg);
+        }
+
+        .btn:active {
+            transform: translate(0);
+            box-shadow: 0px 0px 0px var(--fg);
+        }
+
+        .status-box {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-box.hidden {
+            display: none;
+        }
+
+        .status-box .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .status-box .status-text {
+            font-size: 14px;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
+        .status-box .sub-status {
+            font-size: 12px;
+            color: var(--fg);
+            opacity: 0.5;
+            font-weight: 800;
+        }
+
+        /* Video info with theme-aware background */
+        .video-info {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            background-color: var(--bg);
+            border: 3px solid var(--fg);
+            max-height: 80px;
+            overflow: hidden;
+        }
+
+        .video-info.hidden {
+            display: none;
+        }
+
+        .video-info .title {
+            font-size: 14px;
+            font-weight: 900;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .video-info .details {
+            font-size: 11px;
+            color: var(--fg);
+            opacity: 0.5;
+            margin-bottom: 2px;
+            font-weight: 800;
+        }
+
+        .video-info .duration {
+            font-size: 11px;
+            color: var(--fg);
+            opacity: 0.5;
+            font-weight: 800;
+        }
+
+        /* Focus styles */
+        input:focus-visible,
+        select:focus-visible,
+        button:focus-visible {
+            outline: 3px solid var(--fg);
+            outline-offset: 2px;
+        }
+
+        /* Error toast */
+        .error-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--fg);
+            color: var(--bg);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 900;
+            box-shadow: 4px 4px 0px var(--fg);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .error-toast.show {
+            opacity: 1;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg) 25%, rgba(255,255,255,0.1) 50%, var(--bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Responsive grid */
+        .grid-responsive {
+            display: grid;
+            gap: 6px;
+        }
+
+        @media (max-width: 640px) {
+            .grid-responsive {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .grid-responsive {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body id="body" class="flex flex-col items-center justify-center min-h-screen p-4 light-mode">
+
+    <div onclick="toggleMode()" class="mode-pill" aria-label="Toggle dark mode">MODE</div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="text-4xl font-bold-900 tracking-tighter mb-2">GoDownloader</h1>
+            <p class="text-[10px] font-mono uppercase opacity-60 tracking-widest">Version 0.2 (PUBLIC EXPERIMENTAL)</p>
+        </div>
+
+        <div class="brutalist-card p-6 bg-transparent space-y-6">
+            <div class="form-group">
+                <label for="videoUrl">Target_URL</label>
+                <input type="text" id="videoUrl" placeholder="paste link di sini.." class="font-mono">
+            </div>
+
+            <div class="grid-responsive">
+                <div class="form-group">
+                    <label for="format">Format</label>
+                    <select id="format">
+                        <option value="mp4">VIDEO</option>
+                        <option value="mp3">AUDIO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quality">Max_Res</label>
+                    <select id="quality">
+                        <option value="1080">1080P</option>
+                        <option value="720" selected>720P</option>
+                        <option value="480">480P</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="startDownload()" id="dlBtn" class="brutalist-card bg-transparent py-4 font-bold-900 text-lg uppercase transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900">
+                DOWNLOAD
+            </button>
+
+            <div id="statusBox" class="status-box hidden" role="status" aria-live="polite">
+                <div class="flex flex-col items-center justify-center gap-2 mb-2">
+                    <div id="loaderIcon" class="loader w-4 h-4 border-2 border-black dark:border-white rounded-full"></div>
+                    <span class="status-text" id="statusText">menganalisa link...</span>
+                    <p class="sub-status" id="subStatus">wait ngobrol ke server "proses ini mungkin memakan waktu"</p>
+                </div>
+            </div>
+
+            <div id="videoInfo" class="video-info hidden">
+                <div class="title" id="videoTitle"></div>
+                <div class="details" id="videoDetails"></div>
+                <div class="duration" id="videoDuration"></div>
+            </div>
+        </div>
+
+        <p class="text-center mt-10 text-[9px] opacity-40 uppercase tracking-widest"> jika ada bug ato semacamnya, hubungi kita di godownloader9@gmail.com</p>
+
+        <div class="mt-8 text-center">
+            <p class="text-[10px] uppercase tracking-widest mb-2 opacity-80">Suka project ini? ☕︎</p>
+            <a href="https://saweria.co/GoDownloader" target="_blank" class="saweria-btn uppercase font-bold-900">
+                Support kami ☺︎
+            </a>
+        </div>
+    </div>
+
+    <div id="errorToast" class="error-toast">Gagal membaca clipboard!</div>
+
+    <script>
+        // Auto theme detection and management
+        function initTheme() {
+            const body = document.getElementById('body');
+            const savedTheme = localStorage.getItem('theme');
+            
+            if (savedTheme) {
+                // User has previously selected a theme
+                body.classList.remove('light-mode', 'dark-mode');
+                body.classList.add(savedTheme);
+            } else {
+                // No saved theme, detect from device preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                body.classList.remove('light-mode', 'dark-mode');
+                body.classList.add(prefersDark ? 'dark-mode' : 'light-mode');
+            }
+        }
+        
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', initTheme);
+    </script>
+
+    <script>
+        function toggleMode() {
+            const body = document.getElementById('body');
+            const currentTheme = body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode';
+            body.classList.remove('light-mode', 'dark-mode');
+            body.classList.add(currentTheme === 'dark-mode' ? 'light-mode' : 'dark-mode');
+            localStorage.setItem('theme', currentTheme === 'dark-mode' ? 'light-mode' : 'dark-mode');
+        }
+
+        function showErrorToast() {
+            const toast = document.getElementById('errorToast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        async function startDownload() {
+            const url = document.getElementById('videoUrl').value;
+            const format = document.getElementById('format').value;
+            const res = document.getElementById('quality').value;
+            const btn = document.getElementById('dlBtn');
+            const statusBox = document.getElementById('statusBox');
+            const statusText = document.getElementById('statusText');
+            const subStatus = document.getElementById('subStatus');
+            const loaderIcon = document.getElementById('loaderIcon');
+            const videoInfo = document.getElementById('videoInfo');
+            const videoTitle = document.getElementById('videoTitle');
+            const videoDetails = document.getElementById('videoDetails');
+            const videoDuration = document.getElementById('videoDuration');
+
+            if (!url) return alert("link nya mana guys?");
+
+            btn.disabled = true;
+            statusBox.classList.remove('hidden');
+            loaderIcon.classList.remove('hidden');
+            statusText.innerText = "menganalisa link...";
+            subStatus.innerText = "wait ngobrol ke server (proses ini mungkin memakan waktu)";
+            videoInfo.classList.add('hidden');
+
+            try {
+                // Get video metadata
+                const metadataResponse = await fetch(`/metadata?url=${encodeURIComponent(url)}`);
+                if (metadataResponse.ok) {
+                    const metadata = await metadataResponse.json();
+                    videoTitle.innerText = metadata.title;
+                    videoDetails.innerText = metadata.details;
+                    videoDuration.innerText = metadata.duration;
+                }
+
+                // Sesuai parameter di main.go: url, format, res
+                const params = new URLSearchParams({ url, format, res });
+                const response = await fetch(`/dl?${params.toString()}`);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || "Gagal download");
+                }
+
+                statusText.innerText = "downloading...";
+                subStatus.innerText = "otw proses stream ke browser...";
+
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = "downloaded_file";
+                if (contentDisposition && contentDisposition.includes('filename=')) {
+                    filename = contentDisposition.split('filename=')[1].replace(/"/g, '');
+                }
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(downloadUrl);
+
+                statusText.innerText = "kelar!";
+                subStatus.innerText = "cek galeri hp kamu ᯓ✈︎";
+                loaderIcon.classList.add('hidden');
+                videoInfo.classList.remove('hidden');
+
+            } catch (err) {
+                statusText.innerText = "GAGAL!";
+                subStatus.innerText = err.message;
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => {
+                    if (statusText.innerText === "kelar!" || statusText.innerText === "GAGAL!") {
+                        statusBox.classList.add('hidden');
+                    }
+                }, 5000);
+            }
+        }
+
+        // Auto-paste link from clipboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text && (text.includes('youtube.com') || text.includes('youtu.be') || text.includes('twitter.com') || text.includes('tiktok.com') || text.includes('instagram.com') || text.includes('facebook.com') || text.includes('pinterest.com') || text.includes('pin.it') || text.includes('vimeo.com'))) {
+                    document.getElementById('videoUrl').value = text;
+                }
+            } catch (err) {
+                console.log('Failed to read clipboard contents: ', err);
+                showErrorToast();
+            }
+        });
+    </script>
+</body>
+</html>
