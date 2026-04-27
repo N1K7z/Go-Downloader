@@ -1,506 +1,447 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoDownloader</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root { --bg: #ffffff; --fg: #000000; }
-        .dark-mode { --bg: #0a0a0a; --fg: #ffffff; }
-
-        body {
-            background-color: var(--bg);
-            color: var(--fg);
-            font-family: 'Inter', -apple-system, sans-serif;
-            transition: 0.2s;
-            overflow-x: hidden;
-        }
-
-        * { font-weight: 800; font-style: normal !important; }
-        .font-bold-900 { font-weight: 900 !important; }
-
-        .brutalist-card {
-            border: 3px solid var(--fg);
-            box-shadow: 6px 6px 0px var(--fg);
-            border-radius: 12px;
-            width: 100%;
-        }
-
-        input, select, button {
-            border: 3px solid var(--fg);
-            background-color: transparent;
-            border-radius: 8px;
-            color: var(--fg);
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        input { padding: 16px 18px; font-size: 16px; }
-        input::placeholder { opacity: 0.4; }
-
-        select {
-            padding: 16px 18px !important;
-            cursor: pointer;
-            font-size: 16px;
-            -webkit-appearance: listbox !important;
-            appearance: listbox !important;
-        }
-
-        .dark-mode select { background-color: #0a0a0a; color: #ffffff; }
-        .dark-mode select option { background-color: #1a1a1a; color: #ffffff; }
-
-        button:active:not(:disabled) {
-            transform: translate(3px, 3px);
-            box-shadow: 0px 0px 0px var(--fg);
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .mode-pill {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            border: 3px solid var(--fg);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 10px;
-            text-transform: uppercase;
-            cursor: pointer;
-            background-color: var(--bg);
-            box-shadow: 4px 4px 0px var(--fg);
-            z-index: 50;
-        }
-        .mode-pill:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 7px 7px 0px var(--fg);
-        }
-        .mode-pill:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px var(--fg); }
-
-        .loader { border-top-color: transparent; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .saweria-btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 20px;
-            background: #faae2b;
-            color: #000 !important;
-            border: 3px solid var(--fg);
-            box-shadow: 4px 4px 0px var(--fg);
-            text-decoration: none;
-            font-size: 12px;
-            transition: 0.1s;
-        }
-        .saweria-btn:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 7px 7px 0px var(--fg);
-        }
-        .saweria-btn:active {
-            transform: translate(3px, 3px);
-            box-shadow: 0px 0px 0px var(--fg);
-        }
-
-        /* Responsive container */
-        .container {
-            width: 100%;
-            padding: 0 16px;
-            margin: 0 auto;
-        }
-
-        @media (min-width: 640px) {
-            .container { max-width: 600px; padding: 0; }
-        }
-
-        @media (min-width: 1024px) {
-            .container { max-width: 680px; }
-        }
-
-        /* Responsive mode pill */
-        @media (max-width: 640px) {
-            .mode-pill {
-                top: 10px;
-                right: 10px;
-                padding: 3px 8px;
-                font-size: 9px;
-            }
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 900;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 16px 18px;
-            font-size: 16px;
-            border-radius: 8px;
-            font-weight: 800;
-        }
-
-        .btn {
-            padding: 16px 20px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 900;
-        }
-
-        .btn:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 7px 7px 0px var(--fg);
-        }
-
-        .btn:active {
-            transform: translate(0);
-            box-shadow: 0px 0px 0px var(--fg);
-        }
-
-        .status-box {
-            margin-top: 20px;
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .status-box.hidden {
-            display: none;
-        }
-
-        .status-box .loader {
-            width: 20px;
-            height: 20px;
-            border: 3px solid transparent;
-            border-top-color: currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        .status-box .status-text {
-            font-size: 14px;
-            font-weight: 900;
-            margin-bottom: 5px;
-        }
-
-        .status-box .sub-status {
-            font-size: 12px;
-            color: var(--fg);
-            opacity: 0.5;
-            font-weight: 800;
-        }
-
-        /* Video info with theme-aware background */
-        .video-info {
-            margin-top: 20px;
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-            background-color: var(--bg);
-            border: 3px solid var(--fg);
-            max-height: 80px;
-            overflow: hidden;
-        }
-
-        .video-info.hidden {
-            display: none;
-        }
-
-        .video-info .title {
-            font-size: 14px;
-            font-weight: 900;
-            margin-bottom: 2px;
-            line-height: 1.2;
-        }
-
-        .video-info .details {
-            font-size: 11px;
-            color: var(--fg);
-            opacity: 0.5;
-            margin-bottom: 2px;
-            font-weight: 800;
-        }
-
-        .video-info .duration {
-            font-size: 11px;
-            color: var(--fg);
-            opacity: 0.5;
-            font-weight: 800;
-        }
-
-        /* Focus styles */
-        input:focus-visible,
-        select:focus-visible,
-        button:focus-visible {
-            outline: 3px solid var(--fg);
-            outline-offset: 2px;
-        }
-
-        /* Error toast */
-        .error-toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--fg);
-            color: var(--bg);
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 900;
-            box-shadow: 4px 4px 0px var(--fg);
-            z-index: 100;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .error-toast.show {
-            opacity: 1;
-        }
-
-        /* Loading skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, var(--bg) 25%, rgba(255,255,255,0.1) 50%, var(--bg) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Responsive grid */
-        .grid-responsive {
-            display: grid;
-            gap: 6px;
-        }
-
-        @media (max-width: 640px) {
-            .grid-responsive {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (min-width: 640px) {
-            .grid-responsive {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Video Downloader</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+    --bg:#ffffff;
+    --card:#ffffff;
+    --accent:#000000;
+    --text:#000000;
+    --muted:#4a4a4a;
+    --line:#000000;
+    --shadow:#000000;
+}
+body[data-theme="dark"]{
+    --bg:#000000;
+    --card:#000000;
+    --accent:#ffffff;
+    --text:#ffffff;
+    --muted:#b8b8b8;
+    --line:#ffffff;
+    --shadow:#000000;
+}
+body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Inter","Arial",sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:2.5rem 1rem 1rem;
+    line-height:1.45;
+    text-rendering:optimizeLegibility;
+    -webkit-font-smoothing:antialiased;
+}
+.theme-floating{
+    position:fixed;
+    top:14px;
+    right:18px;
+    z-index:20;
+}
+.container{
+    background:var(--card);
+    padding:1.25rem;
+    border-radius:20px;
+    border:3px solid var(--line);
+    box-shadow:8px 8px 0 var(--shadow);
+    width:100%;
+    max-width:760px;
+}
+.toolbar{
+    margin-bottom:.6rem;
+}
+.brand{
+    font-size:.8rem;
+    font-weight:700;
+    letter-spacing:.08em;
+    color:var(--muted);
+}
+.theme-btn{
+    background:var(--card);
+    color:var(--line);
+    border-radius:999px;
+    padding:.4rem .8rem;
+    font-size:.8rem;
+    border:2px solid var(--line);
+    box-shadow:2px 2px 0 var(--line);
+}
+h1{
+    margin:0 0 .35rem;
+    font-size:clamp(1.45rem,2.4vw,2rem);
+    text-align:left;
+    color:var(--accent);
+    letter-spacing:.3px;
+}
+.subtitle{
+    margin:0 0 1rem;
+    color:var(--muted);
+    font-size:.95rem;
+}
+.input-group{
+    display:flex;
+    gap:.6rem;
+    margin-bottom:1rem;
+}
+input{
+    flex:1;
+    padding:.72rem .82rem;
+    border:2px solid var(--line);
+    border-radius:12px;
+    background:var(--card);
+    color:var(--text);
+}
+input:focus{
+    outline:none;
+    box-shadow:0 0 0 3px rgba(255,95,46,.2);
+}
+button{
+    padding:.68rem 1rem;
+    border:2px solid var(--line);
+    border-radius:12px;
+    background:var(--accent);
+    color:var(--bg);
+    box-shadow:3px 3px 0 var(--line);
+    cursor:pointer;
+    transition:transform .1s,filter .2s;
+}
+button:hover{filter:brightness(1.12);}
+button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line);}
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+.panel{
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:1rem;
+    background:var(--card);
+    margin-bottom:.85rem;
+}
+.hidden{display:none;}
+.meta{
+    margin-bottom:.85rem;
+    animation:fade .3s ease-out;
+}
+.meta .title{
+    font-weight:600;
+    font-size:1.12rem;
+    margin-bottom:.25rem;
+    word-break:break-word;
+}
+.meta .details{
+    font-size:.95rem;
+    color:var(--muted);
+}
+.badge{
+    display:inline-block;
+    padding:.2rem .6rem;
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:999px;
+    font-size:.82rem;
+    margin-top:.4rem;
+}
+.options{
+    margin-bottom:.85rem;
+    animation:fade .3s ease-out;
+}
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:.85rem;
+}
+label{
+    font-size:.84rem;
+    font-weight:600;
+}
+select{
+    width:100%;
+    padding:.65rem;
+    border:2px solid var(--line);
+    border-radius:12px;
+    background:var(--card);
+    color:var(--text);
+    margin-top:.5rem;
+}
+.download-btn{
+    width:100%;
+    padding:.78rem;
+    background:var(--accent);
+    font-weight:600;
+    margin-top:.8rem;
+}
+.status{
+    text-align:center;
+    margin-top:.5rem;
+}
+.spinner{
+    width:24px;
+    height:24px;
+    border:3px solid color-mix(in oklab, var(--line) 25%, transparent);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    margin:0 auto .5rem;
+}
+.toast{
+    position:fixed;
+    bottom:1rem;
+    left:50%;
+    transform:translateX(-50%);
+    background:#d32f2f;
+    color:#fff;
+    padding:.6rem 1rem;
+    border-radius:10px;
+    border:2px solid var(--line);
+    box-shadow:4px 4px 0 var(--line);
+    opacity:0;
+    transition:opacity .3s;
+}
+.toast.show{opacity:1;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fade{from{opacity:0;}to{opacity:1;}}
+@media(max-width:480px){
+    body{padding:3.2rem .7rem .7rem;}
+    .theme-floating{
+        top:10px;
+        right:10px;
+    }
+    .theme-btn{
+        font-size:.74rem;
+        padding:.34rem .72rem;
+    }
+    .container{
+        padding:.9rem;
+        border-width:2px;
+        border-radius:14px;
+        box-shadow:5px 5px 0 var(--shadow);
+    }
+    .row{grid-template-columns:1fr;}
+    .input-group{
+        flex-direction:column;
+        gap:.55rem;
+    }
+    .input-group button{width:100%;}
+    .panel{
+        border-width:2px;
+        border-radius:12px;
+        padding:.82rem;
+    }
+    .meta .title{
+        font-size:1rem;
+    }
+    .meta .details{
+        font-size:.88rem;
+    }
+    .download-btn{
+        margin-top:.7rem;
+    }
+}
+@media(min-width:481px) and (max-width:900px){
+    .container{
+        max-width:690px;
+    }
+    .input-group{
+        align-items:center;
+    }
+    .input-group button{
+        min-width:108px;
+    }
+}
+</style>
 </head>
-<body id="body" class="flex flex-col items-center justify-center min-h-screen p-4 light-mode">
-
-    <div onclick="toggleMode()" class="mode-pill" aria-label="Toggle dark mode">MODE</div>
-
-    <div class="container">
-        <div class="header">
-            <h1 class="text-4xl font-bold-900 tracking-tighter mb-2">GoDownloader</h1>
-            <p class="text-[10px] font-mono uppercase opacity-60 tracking-widest">Version 0.2 (PUBLIC EXPERIMENTAL)</p>
-        </div>
-
-        <div class="brutalist-card p-6 bg-transparent space-y-6">
-            <div class="form-group">
-                <label for="videoUrl">Target_URL</label>
-                <input type="text" id="videoUrl" placeholder="paste link di sini.." class="font-mono">
-            </div>
-
-            <div class="grid-responsive">
-                <div class="form-group">
-                    <label for="format">Format</label>
-                    <select id="format">
-                        <option value="mp4">VIDEO</option>
-                        <option value="mp3">AUDIO</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="quality">Max_Res</label>
-                    <select id="quality">
-                        <option value="1080">1080P</option>
-                        <option value="720" selected>720P</option>
-                        <option value="480">480P</option>
-                    </select>
-                </div>
-            </div>
-
-            <button onclick="startDownload()" id="dlBtn" class="brutalist-card bg-transparent py-4 font-bold-900 text-lg uppercase transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900">
-                DOWNLOAD
-            </button>
-
-            <div id="statusBox" class="status-box hidden" role="status" aria-live="polite">
-                <div class="flex flex-col items-center justify-center gap-2 mb-2">
-                    <div id="loaderIcon" class="loader w-4 h-4 border-2 border-black dark:border-white rounded-full"></div>
-                    <span class="status-text" id="statusText">menganalisa link...</span>
-                    <p class="sub-status" id="subStatus">wait ngobrol ke server "proses ini mungkin memakan waktu"</p>
-                </div>
-            </div>
-
-            <div id="videoInfo" class="video-info hidden">
-                <div class="title" id="videoTitle"></div>
-                <div class="details" id="videoDetails"></div>
-                <div class="duration" id="videoDuration"></div>
-            </div>
-        </div>
-
-        <p class="text-center mt-10 text-[9px] opacity-40 uppercase tracking-widest"> jika ada bug ato semacamnya, hubungi kita di godownloader9@gmail.com</p>
-
-        <div class="mt-8 text-center">
-            <p class="text-[10px] uppercase tracking-widest mb-2 opacity-80">Suka project ini? ☕︎</p>
-            <a href="https://saweria.co/GoDownloader" target="_blank" class="saweria-btn uppercase font-bold-900">
-                Support kami ☺︎
-            </a>
-        </div>
+<body>
+<div class="theme-floating">
+    <button id="themeBtn" class="theme-btn" type="button">Dark Mode</button>
+</div>
+<div class="container">
+    <div class="toolbar">
+        <div class="brand">GO DOWNLOADER</div>
+    </div>
+    <h1>Video Downloader</h1>
+    <p class="subtitle">Unduh video, audio, dan foto secara cepat.</p>
+    <div class="input-group">
+        <input type="text" id="urlInput" placeholder="Paste video URL here">
+        <button id="infoBtn">Get Info</button>
     </div>
 
-    <div id="errorToast" class="error-toast">Gagal membaca clipboard!</div>
+    <div id="metaBox" class="meta hidden panel">
+        <div class="title" id="metaTitle"></div>
+        <div class="details" id="metaDetails"></div>
+        <div class="badge" id="metaDuration"></div>
+    </div>
 
-    <script>
-        // Auto theme detection and management
-        function initTheme() {
-            const body = document.getElementById('body');
-            const savedTheme = localStorage.getItem('theme');
-            
-            if (savedTheme) {
-                // User has previously selected a theme
-                body.classList.remove('light-mode', 'dark-mode');
-                body.classList.add(savedTheme);
-            } else {
-                // No saved theme, detect from device preference
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                body.classList.remove('light-mode', 'dark-mode');
-                body.classList.add(prefersDark ? 'dark-mode' : 'light-mode');
-            }
+    <div id="optionsBox" class="options hidden panel">
+        <div class="row">
+            <div>
+                <label for="formatSelect">Format</label>
+                <select id="formatSelect">
+                    <option value="mp4">Video (MP4)</option>
+                    <option value="mp3">Audio (MP3)</option>
+                    <option value="photo">Photo (Image)</option>
+                </select>
+            </div>
+
+            <div id="resWrapper">
+                <label for="resSelect">Resolution</label>
+                <select id="resSelect">
+                    <option value="360">360p</option>
+                    <option value="480">480p</option>
+                    <option value="720" selected>720p</option>
+                    <option value="1080">1080p</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="downloadBtn" class="download-btn">Download</button>
+    </div>
+
+    <div id="statusBox" class="status hidden">
+        <div class="spinner"></div>
+        <div id="statusMsg"></div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const urlInput=document.getElementById('urlInput');
+const infoBtn=document.getElementById('infoBtn');
+const metaBox=document.getElementById('metaBox');
+const metaTitle=document.getElementById('metaTitle');
+const metaDetails=document.getElementById('metaDetails');
+const metaDuration=document.getElementById('metaDuration');
+const optionsBox=document.getElementById('optionsBox');
+const formatSelect=document.getElementById('formatSelect');
+const resWrapper=document.getElementById('resWrapper');
+const resSelect=document.getElementById('resSelect');
+const downloadBtn=document.getElementById('downloadBtn');
+const statusBox=document.getElementById('statusBox');
+const statusMsg=document.getElementById('statusMsg');
+const toast=document.getElementById('toast');
+const themeBtn=document.getElementById('themeBtn');
+
+function showToast(msg){
+    toast.textContent=msg;
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'),3000);
+}
+
+function setLoading(show,msg=''){
+    if(show){
+        statusBox.classList.remove('hidden');
+        statusMsg.textContent=msg;
+    }else{
+        statusBox.classList.add('hidden');
+    }
+}
+
+const savedTheme=localStorage.getItem('theme');
+if(savedTheme){
+    document.body.setAttribute('data-theme',savedTheme);
+}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){
+    document.body.setAttribute('data-theme','dark');
+}
+
+function syncThemeButton(){
+    const isDark=document.body.getAttribute('data-theme')==='dark';
+    themeBtn.textContent=isDark?'Light Mode':'Dark Mode';
+}
+syncThemeButton();
+
+themeBtn.addEventListener('click',()=>{
+    const isDark=document.body.getAttribute('data-theme')==='dark';
+    const nextTheme=isDark?'light':'dark';
+    if(nextTheme==='light'){
+        document.body.removeAttribute('data-theme');
+    }else{
+        document.body.setAttribute('data-theme','dark');
+    }
+    localStorage.setItem('theme',nextTheme);
+    syncThemeButton();
+});
+
+infoBtn.addEventListener('click', async()=>{
+    const url=urlInput.value.trim();
+    if(!url){showToast('Masukkan URL');return;}
+    infoBtn.disabled=true;
+    setLoading(true,'Menganalisa...');
+    try{
+        const resp=await fetch(`/metadata?url=${encodeURIComponent(url)}`);
+        if(!resp.ok) throw new Error('Gagal ambil metadata');
+        const data=await resp.json();
+        metaTitle.textContent=data.title||'';
+        metaDetails.textContent=data.details||'';
+        metaDuration.textContent=data.duration||'';
+        metaBox.classList.remove('hidden');
+        optionsBox.classList.remove('hidden');
+    }catch(e){
+        showToast(e.message);
+    }finally{
+        setLoading(false);
+        infoBtn.disabled=false;
+    }
+});
+
+formatSelect.addEventListener('change',()=>{
+    if(formatSelect.value==='mp4'){
+        resWrapper.classList.remove('hidden');
+    }else{
+        resWrapper.classList.add('hidden');
+    }
+});
+
+downloadBtn.addEventListener('click', async()=>{
+    const url=urlInput.value.trim();
+    if(!url){showToast('Masukkan URL');return;}
+    const format=formatSelect.value;
+    const res=resSelect.value;
+    downloadBtn.disabled=true;
+    setLoading(true,'Mengunduh...');
+    try{
+        const params=new URLSearchParams({url,format});
+        if(format==='mp4') params.append('res',res);
+        if(format==='mp4'){
+            const directLink=document.createElement('a');
+            directLink.href=`/dl?${params.toString()}`;
+            directLink.rel='noopener';
+            document.body.appendChild(directLink);
+            directLink.click();
+            document.body.removeChild(directLink);
+            statusMsg.textContent='Streaming langsung ke browser...';
+            return;
         }
-        
-        // Initialize theme on page load
-        document.addEventListener('DOMContentLoaded', initTheme);
-    </script>
-
-    <script>
-        function toggleMode() {
-            const body = document.getElementById('body');
-            const currentTheme = body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode';
-            body.classList.remove('light-mode', 'dark-mode');
-            body.classList.add(currentTheme === 'dark-mode' ? 'light-mode' : 'dark-mode');
-            localStorage.setItem('theme', currentTheme === 'dark-mode' ? 'light-mode' : 'dark-mode');
+        const resp=await fetch(`/dl?${params.toString()}`);
+        if(!resp.ok){
+            const err=await resp.json().catch(()=>({}));
+            throw new Error(err.error||'Unduh gagal');
         }
-
-        function showErrorToast() {
-            const toast = document.getElementById('errorToast');
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+        const cd=resp.headers.get('Content-Disposition');
+        let filename='download';
+        if(cd && cd.includes('filename=')){
+            filename=cd.split('filename=')[1].replace(/"/g,'');
         }
-
-        async function startDownload() {
-            const url = document.getElementById('videoUrl').value;
-            const format = document.getElementById('format').value;
-            const res = document.getElementById('quality').value;
-            const btn = document.getElementById('dlBtn');
-            const statusBox = document.getElementById('statusBox');
-            const statusText = document.getElementById('statusText');
-            const subStatus = document.getElementById('subStatus');
-            const loaderIcon = document.getElementById('loaderIcon');
-            const videoInfo = document.getElementById('videoInfo');
-            const videoTitle = document.getElementById('videoTitle');
-            const videoDetails = document.getElementById('videoDetails');
-            const videoDuration = document.getElementById('videoDuration');
-
-            if (!url) return alert("link nya mana guys?");
-
-            btn.disabled = true;
-            statusBox.classList.remove('hidden');
-            loaderIcon.classList.remove('hidden');
-            statusText.innerText = "menganalisa link...";
-            subStatus.innerText = "wait ngobrol ke server (proses ini mungkin memakan waktu)";
-            videoInfo.classList.add('hidden');
-
-            try {
-                // Get video metadata
-                const metadataResponse = await fetch(`/metadata?url=${encodeURIComponent(url)}`);
-                if (metadataResponse.ok) {
-                    const metadata = await metadataResponse.json();
-                    videoTitle.innerText = metadata.title;
-                    videoDetails.innerText = metadata.details;
-                    videoDuration.innerText = metadata.duration;
-                }
-
-                // Sesuai parameter di main.go: url, format, res
-                const params = new URLSearchParams({ url, format, res });
-                const response = await fetch(`/dl?${params.toString()}`);
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || "Gagal download");
-                }
-
-                statusText.innerText = "downloading...";
-                subStatus.innerText = "otw proses stream ke browser...";
-
-                const contentDisposition = response.headers.get('Content-Disposition');
-                let filename = "downloaded_file";
-                if (contentDisposition && contentDisposition.includes('filename=')) {
-                    filename = contentDisposition.split('filename=')[1].replace(/"/g, '');
-                }
-
-                const blob = await response.blob();
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(downloadUrl);
-
-                statusText.innerText = "kelar!";
-                subStatus.innerText = "cek galeri hp kamu ᯓ✈︎";
-                loaderIcon.classList.add('hidden');
-                videoInfo.classList.remove('hidden');
-
-            } catch (err) {
-                statusText.innerText = "GAGAL!";
-                subStatus.innerText = err.message;
-            } finally {
-                btn.disabled = false;
-                setTimeout(() => {
-                    if (statusText.innerText === "kelar!" || statusText.innerText === "GAGAL!") {
-                        statusBox.classList.add('hidden');
-                    }
-                }, 5000);
-            }
-        }
-
-        // Auto-paste link from clipboard
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const text = await navigator.clipboard.readText();
-                if (text && (text.includes('youtube.com') || text.includes('youtu.be') || text.includes('twitter.com') || text.includes('tiktok.com') || text.includes('instagram.com') || text.includes('facebook.com') || text.includes('pinterest.com') || text.includes('pin.it') || text.includes('vimeo.com'))) {
-                    document.getElementById('videoUrl').value = text;
-                }
-            } catch (err) {
-                console.log('Failed to read clipboard contents: ', err);
-                showErrorToast();
-            }
-        });
-    </script>
+        const blob=await resp.blob();
+        const link=document.createElement('a');
+        link.href=URL.createObjectURL(blob);
+        link.download=filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        statusMsg.textContent='Selesai! File diunduh.';
+    }catch(e){
+        showToast(e.message);
+    }finally{
+        setLoading(false);
+        downloadBtn.disabled=false;
+    }
+});
+</script>
 </body>
 </html>
