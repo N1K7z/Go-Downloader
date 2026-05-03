@@ -1,3 +1,2 @@
 # Go-Downloader
-masih banyak bug btw 
-benerin sendiri saya malas
+masih banyak bug btw, benerin sendiri saya malas
