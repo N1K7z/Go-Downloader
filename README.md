@@ -1,5 +1,4 @@
 <div align="center">
-<br/>
 
 <img src="logo.png" width="90" height="90" alt="Go-Downloader" style="border-radius:50%;object-fit:cover;display:block;margin:auto;" />
 
