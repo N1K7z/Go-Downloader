@@ -6,14 +6,8 @@
 # Go-Downloader
 
 ![Version](https://img.shields.io/badge/version-0.2-blue?style=flat-square)
-![Go](https://img.shields.io/badge/Go-1.26.2-X-00ADD8?style=flat-square&logo=go&logoColor=white)
+![Go](https://img.shields.io/badge/Go-1.26.2--X-00ADD8?style=flat-square&logo=go&logoColor=white)
 ![License](https://img.shields.io/badge/license-Non--Commercial-cc1111?style=flat-square)
-
-</div>
-
-</div>
-
-Self-hosted video downloader — Go + yt-dlp
 
 </div>
 
