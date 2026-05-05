@@ -8,6 +8,8 @@
 ![Go](https://img.shields.io/badge/Go-1.26.2--X-00ADD8?style=flat-square&logo=go&logoColor=white)
 ![License](https://img.shields.io/badge/license-Non--Commercial-cc1111?style=flat-square)
 
+<img src="https://github.githubassets.com/images/mona-loading-dark.gif" width="60" alt="loading" />
+
 </div>
 
 ---
