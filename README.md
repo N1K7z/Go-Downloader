@@ -16,7 +16,7 @@ Self-hosted video downloader — Go + yt-dlp
 
 ## About
 
-Web-based video downloader yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output bisa MP4, MP3
+Go-Downloader adalah Web-based video downloader bikinan lokal yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output MP4, MP3 ## foto tahap perkembangan
 
 ---
 
@@ -40,8 +40,9 @@ Web-based video downloader yang bisa jalan di server sendiri. Support YouTube, I
 ### Prerequisites
 
 ```bash
-pip install yt-dlp
+sudo apt install yt-dlp
 sudo apt install ffmpeg
+sudo apt install chromium
 ```
 
 ### Run
