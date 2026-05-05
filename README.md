@@ -16,7 +16,7 @@ Self-hosted video downloader — Go + yt-dlp
 
 ## About
 
-Go-Downloader adalah Web-based video downloader bikinan lokal yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output MP4, MP3 ## foto tahap perkembangan
+Go-Downloader adalah Web-based video downloader "buatan lokal indonesia" yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output MP4, MP3 (foto/thumnail sedang proses tahap perkembangan)
 
 ---
 
