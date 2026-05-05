@@ -18,11 +18,11 @@ Self-hosted video downloader — Go + yt-dlp
 
 ---
 
-## About
-# Eng
+# About
+## Eng
 Go-Downloader is an open-source, web-based video downloader designed to run on your own server. It supports YouTube, Instagram, Pinterest, and various other platforms — via yt-dlp — with MP4 and MP3 output formats available. Photo and thumbnail downloading are currently in active developmen
 
-# ID
+## ID
 Go-Downloader adalah project Open Source Web-based video downloader yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output MP4, MP3 (foto/thumnail sedang proses tahap perkembangan)
 
 ---
