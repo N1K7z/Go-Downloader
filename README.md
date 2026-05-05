@@ -45,6 +45,8 @@
 
 ### Prerequisites
 ```bash
+sudo add-apt-repository ppa:xtradeb/apps -y
+sudo apt update
 sudo apt install yt-dlp ffmpeg chromium
 ```
 
