@@ -1,7 +1,6 @@
 <div align="center">
-<br/>
-<img src="logo.png" width="100" alt="Go-Downloader" />
-<br/>
+
+<img src="logo.png" width="90" alt="Go-Downloader" />
 
 # Go-Downloader
 
@@ -11,18 +10,17 @@
 
 </div>
 
-<p align="center">
-  <img src="https://github.githubassets.com/images/mona-loading-dark.gif" width="100" alt="GitHub Logo">
-</p>
-
 ---
 
-# About
-## Eng
-Go-Downloader is an open-source, web-based video downloader designed to run on your own server. It supports YouTube, Instagram, Pinterest, and various other platforms via yt-dlp. with MP4 and MP3 output formats available.
+## About
 
-## ID
-Go-Downloader adalah project Open Source Web-based video downloader yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output MP4, MP3.
+> Go-Downloader is an open-source, web-based video downloader designed to run on your own server.  
+> Support YouTube, Instagram, Pinterest, and various other platforms via yt-dlp.  
+> Output: MP4 & MP3.
+
+> Go-Downloader adalah project Open Source web-based video downloader yang bisa jalan di server sendiri.  
+> Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp.  
+> Output: MP4, MP3.
 
 ---
 
@@ -44,15 +42,11 @@ Go-Downloader adalah project Open Source Web-based video downloader yang bisa ja
 ## Installation
 
 ### Prerequisites
-
 ```bash
-sudo apt install yt-dlp
-sudo apt install ffmpeg
-sudo apt install chromium
+sudo apt install yt-dlp ffmpeg chromium
 ```
 
 ### Run
-
 ```bash
 git clone https://github.com/N1K7z/Go-Downloader.git
 cd Go-Downloader
@@ -63,14 +57,12 @@ go run main.go
 Buka **http://localhost:8080**
 
 ### Build binary
-
 ```bash
 go build -o go-downloader .
 ./go-downloader
 ```
 
 ### Cookie support (opsional)
-
 ```bash
 cp /path/to/cookies.txt ./cookies.txt
 ```
