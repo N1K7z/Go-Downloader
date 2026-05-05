@@ -16,7 +16,7 @@ Self-hosted video downloader — Go + yt-dlp
 
 ## About
 
-Web-based video downloader yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output bisa MP4, MP3, atau foto langsung.
+Web-based video downloader yang bisa jalan di server sendiri. Support YouTube, Instagram, Pinterest, dan platform lainnya via yt-dlp. Output bisa MP4, MP3
 
 ---
 
