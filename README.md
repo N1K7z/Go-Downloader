@@ -56,7 +56,7 @@ go mod tidy
 go run main.go
 ```
 
-Buka **http://localhost:8080**
+Open **http://localhost:8080**
 
 ### Build binary
 ```bash
