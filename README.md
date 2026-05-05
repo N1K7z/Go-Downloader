@@ -1,6 +1,6 @@
 <div align="center">
 <br/>
-<img src="logo.png" width="90" alt="Go-Downloader" />
+<img src="logo.png" width="100" alt="Go-Downloader" />
 <br/>
 
 # Go-Downloader
