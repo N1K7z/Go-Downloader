@@ -12,6 +12,10 @@ Self-hosted video downloader — Go + yt-dlp
 
 </div>
 
+<p align="center">
+  <img src="https://github.githubassets.com/images/mona-loading-dark.gif" width="100" alt="GitHub Logo">
+</p>
+
 ---
 
 ## About
