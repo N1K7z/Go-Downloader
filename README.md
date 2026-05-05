@@ -1,12 +1,13 @@
 <div align="center">
-
 <br/>
-
 <img src="logo.png" width="90" alt="Go-Downloader" style="border-radius:50%" />
-
 <br/><br/>
 
 # Go-Downloader
+
+![Version](https://img.shields.io/badge/version-0.2-blue?style=flat-square)
+
+</div>
 
 Self-hosted video downloader — Go + yt-dlp
 
